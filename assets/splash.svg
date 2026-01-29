@@ -1,0 +1,13 @@
+<svg width="1080" height="2340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="splashGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f9fafb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="2340" fill="url(#splashGrad)"/>
+  <circle cx="540" cy="800" r="400" fill="#00C8B4" opacity="0.1"/>
+  <text x="540" y="1000" font-size="300" font-weight="bold" text-anchor="middle" fill="#00C8B4" font-family="Arial">🌱</text>
+  <text x="540" y="1400" font-size="100" font-weight="bold" text-anchor="middle" fill="#1f2937" font-family="Arial">EcoPanier</text>
+  <text x="540" y="1550" font-size="60" text-anchor="middle" fill="#6b7280" font-family="Arial">Réduisez le gaspillage</text>
+</svg>

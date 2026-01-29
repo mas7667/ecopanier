@@ -1,0 +1,7 @@
+{
+  "name": "EcoPanier",
+  "description": "Smart pantry manager and culinary assistant to reduce food waste and optimize grocery budgets.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

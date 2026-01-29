@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "ecopanier",
+    "slug": "ecopanier",
+    "version": "1.0.0",
+    "sdkVersion": "54.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.svg",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.svg",
+      "resizeMode": "contain",
+      "backgroundColor": "#f9fafb"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true,
+      "bundleIdentifier": "com.ecopanier.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.svg",
+        "backgroundColor": "#f9fafb"
+      },
+      "package": "com.ecopanier.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.svg",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow ecopanier to access your photos.",
+          "cameraPermission": "Allow ecopanier to access your camera."
+        }
+      ],
+      [
+        "react-native-vision-camera"
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
