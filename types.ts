@@ -26,7 +26,7 @@ export interface Recipe {
   steps?: string[];
 }
 
-export type ViewState = 'dashboard' | 'inventory' | 'recipes' | 'settings';
+export type ViewState = 'dashboard' | 'inventory' | 'scan' | 'recipes' | 'settings';
 
 export interface UserSettings {
   notifications: boolean;
@@ -44,6 +44,7 @@ export interface InventoryProps {
   inventory: InventoryItem[];
   onAdd: (item: InventoryItem) => void;
   onDelete: (id: string) => void;
+  onNavigate?: (view: ViewState) => void;
 }
 
 export interface RecipesProps {

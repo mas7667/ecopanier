@@ -3,6 +3,7 @@ export const translations = {
     // Navigation
     home: 'Accueil',
     inventory: 'Inventaire',
+    scan: 'Scan',
     recipes: 'Recettes',
     settings: 'Paramètres',
     
@@ -67,6 +68,7 @@ export const translations = {
     // Navigation
     home: 'Home',
     inventory: 'Inventory',
+    scan: 'Scan',
     recipes: 'Recipes',
     settings: 'Settings',
     

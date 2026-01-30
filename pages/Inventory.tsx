@@ -7,7 +7,7 @@ import { CATEGORIES } from '../constants';
 import { InventoryItem, InventoryProps } from '../types';
 import { useAppContext } from '../context/AppContext';
 
-const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete }) => {
+const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNavigate }) => {
   const { isDarkMode } = useAppContext();
   const [activeCategory, setActiveCategory] = useState('Toutes');
   const [search, setSearch] = useState('');
@@ -84,7 +84,11 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete }) => 
 
   return (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
-      <Header appName="EcoManger" />
+      <Header
+        appName="EcoManger"
+        onAddPress={() => setModalVisible(true)}
+        onScanPress={() => onNavigate?.('scan')}
+      />
       <View style={[styles.headerContent, isDarkMode && styles.darkHeaderContent]}>
         <View style={[styles.searchContainer, isDarkMode && styles.darkSearchContainer]}>
           <Ionicons name="search" size={20} color={isDarkMode ? '#6b7280' : '#9ca3af'} style={styles.searchIcon} />

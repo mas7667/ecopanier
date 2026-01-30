@@ -17,6 +17,7 @@
     "@google/generative-ai": "^0.3.0",
     "@react-native-community/cli-server-api": "^20.0.2",
     "expo": "^54.0.0",
+    "expo-camera": "~17.0.10",
     "expo-image-picker": "~17.0.10",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",

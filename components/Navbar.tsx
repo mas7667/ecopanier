@@ -17,6 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onChangeView }) => {
   const navItems: Array<{ id: ViewState; label: string; icon: string }> = [
     { id: 'dashboard', label: t.home, icon: 'home' },
     { id: 'inventory', label: t.inventory, icon: 'list' },
+    { id: 'scan', label: t.scan, icon: 'barcode-outline' },
     { id: 'recipes', label: t.recipes, icon: 'restaurant' },
     { id: 'settings', label: t.settings, icon: 'settings' },
   ];

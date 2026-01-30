@@ -5,6 +5,7 @@ import { AppProvider, useAppContext } from './context/AppContext';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
+import ScanEcran from './pages/ScanEcran';
 import Recipes from './pages/Recipes';
 import Settings from './pages/Settings';
 import { appStyles as styles } from './styles/appStyles';
@@ -39,8 +40,11 @@ const AppContent: React.FC = () => {
             inventory={inventory} 
             onAdd={handleAddItem} 
             onDelete={handleDeleteItem} 
+            onNavigate={setCurrentView}
           />
         );
+      case 'scan':
+        return <ScanEcran onAdd={handleAddItem} onFinish={() => setCurrentView('inventory')} />;
       case 'recipes':
         return (
           <Recipes 

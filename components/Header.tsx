@@ -6,9 +6,10 @@ import { useAppContext } from '../context/AppContext';
 interface HeaderProps {
   appName?: string;
   onAddPress?: () => void;
+  onScanPress?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ appName = 'EcoManger', onAddPress }) => {
+const Header: React.FC<HeaderProps> = ({ appName = 'EcoManger', onAddPress, onScanPress }) => {
   const { isDarkMode } = useAppContext();
 
   return (
@@ -20,12 +21,16 @@ const Header: React.FC<HeaderProps> = ({ appName = 'EcoManger', onAddPress }) =>
         <Text style={[styles.appName, isDarkMode && styles.darkAppName]}>{appName}</Text>
       </View>
       <View style={styles.headerRight}>
-        <TouchableOpacity style={[styles.addButton, isDarkMode && styles.darkAddButton]} onPress={onAddPress}>
-          <Text style={styles.addButtonText}>+</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.addButton, isDarkMode && styles.darkAddButton]} onPress={onAddPress}>
-          <Ionicons name="barcode-outline" size={24} color="#00C8B4" />
-        </TouchableOpacity>
+        {onAddPress && (
+          <TouchableOpacity style={[styles.addButton, isDarkMode && styles.darkAddButton]} onPress={onAddPress}>
+            <Text style={styles.addButtonText}>+</Text>
+          </TouchableOpacity>
+        )}
+        {onScanPress && (
+          <TouchableOpacity style={[styles.addButton, isDarkMode && styles.darkAddButton]} onPress={onScanPress}>
+            <Ionicons name="barcode-outline" size={24} color="#00C8B4" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
