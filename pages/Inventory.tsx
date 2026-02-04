@@ -8,7 +8,8 @@ import { InventoryItem, InventoryProps } from '../types';
 import { useAppContext } from '../context/AppContext';
 
 const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNavigate }) => {
-  const { isDarkMode } = useAppContext();
+  const { isDarkMode, shoppingList, removeFromShoppingList } = useAppContext();
+  const [activeTab, setActiveTab] = useState<'inventory' | 'shopping'>('inventory');
   const [activeCategory, setActiveCategory] = useState('Toutes');
   const [search, setSearch] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
@@ -82,6 +83,28 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNav
     );
   };
 
+  // Render shopping list item
+  const renderShoppingItem = ({ item }: { item: InventoryItem }) => {
+    return (
+      <View style={[styles.card, isDarkMode && styles.darkCard]}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.cardContent}>
+          <Text style={[styles.itemName, isDarkMode && styles.darkItemName]} numberOfLines={1}>{item.name}</Text>
+          <Text style={[styles.itemCategory, isDarkMode && styles.darkItemCategory]}>{item.category}</Text>
+        </View>
+        <View style={styles.rightContent}>
+          <Text style={[styles.quantity, isDarkMode && styles.darkQuantity]}>{item.quantity} {item.unit}</Text>
+          <TouchableOpacity 
+            style={styles.removeBtn}
+            onPress={() => removeFromShoppingList(item.id)}
+          >
+            <Ionicons name="trash-outline" size={18} color="#dc2626" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
       <Header
@@ -90,21 +113,39 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNav
         onScanPress={() => onNavigate?.('scan')}
       />
       <View style={[styles.headerContent, isDarkMode && styles.darkHeaderContent]}>
-        <View style={[styles.searchContainer, isDarkMode && styles.darkSearchContainer]}>
-          <Ionicons name="search" size={20} color={isDarkMode ? '#6b7280' : '#9ca3af'} style={styles.searchIcon} />
-          <TextInput
-            style={[styles.searchInput, isDarkMode && styles.darkSearchInput]}
-            placeholder="Rechercher..."
-            placeholderTextColor={isDarkMode ? '#6b7280' : '#9ca3af'}
-            value={search}
-            onChangeText={setSearch}
-          />
-          <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
-             <Ionicons name="add" size={20} color="#fff" />
+        {/* Tabs */}
+        <View style={[styles.tabs, isDarkMode && styles.darkTabs]}>
+          <TouchableOpacity 
+            style={[styles.tab, activeTab === 'inventory' && styles.tabActive, isDarkMode && styles.darkTab, activeTab === 'inventory' && isDarkMode && styles.darkTabActive]}
+            onPress={() => setActiveTab('inventory')}
+          >
+            <Text style={[styles.tabText, activeTab === 'inventory' && styles.tabTextActive, isDarkMode && styles.darkTabText, activeTab === 'inventory' && isDarkMode && styles.darkTabTextActive]}>Inventaire</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.tab, activeTab === 'shopping' && styles.tabActive, isDarkMode && styles.darkTab, activeTab === 'shopping' && isDarkMode && styles.darkTabActive]}
+            onPress={() => setActiveTab('shopping')}
+          >
+            <Text style={[styles.tabText, activeTab === 'shopping' && styles.tabTextActive, isDarkMode && styles.darkTabText, activeTab === 'shopping' && isDarkMode && styles.darkTabTextActive]}>Épicerie</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.categories}>
+        {activeTab === 'inventory' && (
+          <>
+            <View style={[styles.searchContainer, isDarkMode && styles.darkSearchContainer]}>
+              <Ionicons name="search" size={20} color={isDarkMode ? '#6b7280' : '#9ca3af'} style={styles.searchIcon} />
+              <TextInput
+                style={[styles.searchInput, isDarkMode && styles.darkSearchInput]}
+                placeholder="Rechercher..."
+                placeholderTextColor={isDarkMode ? '#6b7280' : '#9ca3af'}
+                value={search}
+                onChangeText={setSearch}
+              />
+              <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
+                <Ionicons name="add" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.categories}>
           <FlatList
             horizontal
             data={CATEGORIES}
@@ -131,17 +172,35 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNav
             contentContainerStyle={{ gap: 8, paddingHorizontal: 4 }}
           />
         </View>
+          </>
+        )}
       </View>
 
-      <FlatList
-        data={filteredItems}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={[styles.listContent, isDarkMode && styles.darkListContent]}
-        ListEmptyComponent={
-          <Text style={[styles.emptyText, isDarkMode && styles.darkEmptyText]}>Aucun aliment trouvé</Text>
-        }
-      />
+      {activeTab === 'inventory' ? (
+        <FlatList
+          data={filteredItems}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={[styles.listContent, isDarkMode && styles.darkListContent]}
+          ListEmptyComponent={
+            <Text style={[styles.emptyText, isDarkMode && styles.darkEmptyText]}>Aucun aliment trouvé</Text>
+          }
+        />
+      ) : (
+        <FlatList
+          data={shoppingList}
+          renderItem={renderShoppingItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={[styles.listContent, isDarkMode && styles.darkListContent]}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="cart-outline" size={64} color={isDarkMode ? '#6b7280' : '#d1d5db'} />
+              <Text style={[styles.emptyText, isDarkMode && styles.darkEmptyText]}>Votre liste d'épicerie est vide</Text>
+              <Text style={[styles.emptySubtext, isDarkMode && styles.darkEmptySubtext]}>Ajoutez des articles depuis votre inventaire</Text>
+            </View>
+          }
+        />
+      )}
 
       <Modal
         animationType="slide"
@@ -372,13 +431,77 @@ const styles = StyleSheet.create({
   darkQuantity: {
     color: '#fff',
   },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 80,
+    paddingHorizontal: 32,
+  },
   emptyText: {
     textAlign: 'center',
     color: '#9ca3af',
-    marginTop: 40,
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: '600',
   },
   darkEmptyText: {
     color: '#6b7280',
+  },
+  emptySubtext: {
+    textAlign: 'center',
+    color: '#d1d5db',
+    marginTop: 8,
+    fontSize: 14,
+  },
+  darkEmptySubtext: {
+    color: '#6b7280',
+  },
+  removeBtn: {
+    marginTop: 8,
+    padding: 4,
+  },
+  // Tabs styles
+  tabs: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  darkTabs: {
+    // No specific dark styles needed
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f3f4f6',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  darkTab: {
+    backgroundColor: '#374151',
+  },
+  tabActive: {
+    backgroundColor: '#111827',
+  },
+  darkTabActive: {
+    backgroundColor: '#00C8B4',
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  darkTabText: {
+    color: '#d1d5db',
+  },
+  tabTextActive: {
+    color: '#fff',
+  },
+  darkTabTextActive: {
+    color: '#111827',
   },
   // Modal Styles
   modalOverlay: {

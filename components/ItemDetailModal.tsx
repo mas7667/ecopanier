@@ -2,12 +2,13 @@ import React from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { InventoryItem } from '../types';
+import { useAppContext } from '../context/AppContext';
 
 interface ItemDetailModalProps {
   visible: boolean;
   item: InventoryItem | null;
   onClose: () => void;
-  onAddToShoppingList: (item: InventoryItem) => void;
+  onAddToShoppingList?: (item: InventoryItem) => void;
   onEdit: (item: InventoryItem) => void;
   onDelete: (id: string) => void;
 }
@@ -20,6 +21,8 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { addToShoppingList } = useAppContext();
+  
   if (!item) return null;
 
   const getStatusColor = (status: InventoryItem['status']) => {
@@ -127,7 +130,8 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             <TouchableOpacity
               style={[styles.button, styles.addButton]}
               onPress={() => {
-                onAddToShoppingList(item);
+                addToShoppingList(item);
+                if (onAddToShoppingList) onAddToShoppingList(item);
                 onClose();
               }}
             >
