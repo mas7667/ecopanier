@@ -34,7 +34,7 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
       case 'safe':
         return { bg: '#d1fae5', text: '#059669', label: 'Sûr' };
       default:
-        return { bg: '#f3f4f6', text: '#6b7280', label: 'Unknown' };
+        return { bg: '#f3f4f6', text: '#6b7280', label: 'Inconnu' };
     }
   };
 
