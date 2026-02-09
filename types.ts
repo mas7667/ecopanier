@@ -44,6 +44,7 @@ export interface InventoryProps {
   inventory: InventoryItem[];
   onAdd: (item: InventoryItem) => void;
   onDelete: (id: string) => void;
+  onUpdate: (item: InventoryItem) => void;
   onNavigate?: (view: ViewState) => void;
 }
 

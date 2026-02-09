@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, FlatList, Image, TouchableOpacity, Platform, Modal, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemDetailModal from '../components/ItemDetailModal';
+import ItemEditModal from '../components/ItemEditModal';
 import Header from '../components/Header';
 import { CATEGORIES } from '../constants';
 import { InventoryItem, InventoryProps } from '../types';
 import { useAppContext } from '../context/AppContext';
 
-const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNavigate }) => {
+const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onUpdate, onNavigate }) => {
   const { isDarkMode, shoppingList, removeFromShoppingList } = useAppContext();
   const [activeTab, setActiveTab] = useState<'inventory' | 'shopping'>('inventory');
   const [activeCategory, setActiveCategory] = useState('Toutes');
@@ -15,6 +16,8 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNav
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   
   // New Item State
   const [newItemName, setNewItemName] = useState('');
@@ -108,7 +111,7 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNav
   return (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
       <Header
-        appName="EcoManger"
+        appName="EcoPanier"
         onAddPress={() => setModalVisible(true)}
         onScanPress={() => onNavigate?.('scan')}
       />
@@ -269,11 +272,29 @@ const Inventory: React.FC<InventoryProps> = ({ inventory, onAdd, onDelete, onNav
           Alert.alert('Succès', `${item.name} ajouté à la liste d'épicerie`);
         }}
         onEdit={(item) => {
-          Alert.alert('Édition', `Édition de ${item.name} (à implémenter)`);
+          setEditingItem(item);
+          setEditModalVisible(true);
         }}
         onDelete={(id) => {
           onDelete(id);
           Alert.alert('Succès', 'Article supprimé');
+        }}
+      />
+
+      {/* Item Edit Modal */}
+      <ItemEditModal
+        visible={isEditModalVisible}
+        item={editingItem}
+        onClose={() => {
+          setEditModalVisible(false);
+          setEditingItem(null);
+        }}
+        onSave={(updatedItem) => {
+          onUpdate(updatedItem);
+          setSelectedItem(updatedItem);
+          setEditModalVisible(false);
+          setEditingItem(null);
+          Alert.alert('Succès', 'Article mis à jour');
         }}
       />
     </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
@@ -11,13 +11,19 @@ import { useAppContext } from '../context/AppContext';
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate, inventory }) => {
   const { isDarkMode } = useAppContext();
+  const [isModalVisible, setModalVisible] = useState(false);
+  
   const urgentItems = inventory.filter(i => i.status === 'urgent').slice(0, 3);
   const urgentCount = inventory.filter(i => i.status === 'urgent').length;
   const soonCount = inventory.filter(i => i.status === 'soon').length;
 
   return (
     <ScrollView style={[styles.container, isDarkMode && styles.darkContainer]} contentContainerStyle={styles.content}>
-      <Header appName="EcoPanier" />
+      <Header 
+        appName="EcoPanier"
+        onAddPress={() => setModalVisible(true)}
+        onScanPress={() => onNavigate?.('scan')}
+      />
       {/* Stats Cards */}
       <View style={styles.statsRow}>
         <StatCard

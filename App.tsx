@@ -25,6 +25,10 @@ const AppContent: React.FC = () => {
     setInventory(prev => prev.filter(item => item.id !== id));
   };
 
+  const handleUpdateItem = (updatedItem: InventoryItem) => {
+    setInventory(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
+  };
+
   const renderView = () => {
     switch (currentView) {
       case 'dashboard':
@@ -40,6 +44,7 @@ const AppContent: React.FC = () => {
             inventory={inventory} 
             onAdd={handleAddItem} 
             onDelete={handleDeleteItem} 
+            onUpdate={handleUpdateItem}
             onNavigate={setCurrentView}
           />
         );

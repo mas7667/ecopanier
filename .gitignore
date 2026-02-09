@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# My paritcula files 
+
+ARCHITECTURE.md
+MIGRATION_GUIDE.md
+RESTRUCTURATION_SUMMARY.md
