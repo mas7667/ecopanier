@@ -6,72 +6,26 @@ import { MOCK_RECIPES } from '../constants';
 import { generateRecipeSuggestion } from '../services/geminiService';
 import { RecipesProps, Recipe } from '../types';
 import { useAppContext } from '../context/AppContext';
+import GenerateRecipe from './GenerateRecipe';
 
 const Recipes: React.FC<RecipesProps> = ({ inventory }) => {
   const { isDarkMode } = useAppContext();
   const [activeTab, setActiveTab] = useState<'suggested' | 'all'>('suggested');
   const [loadingAI, setLoadingAI] = useState(false);
   const [generatedRecipe, setGeneratedRecipe] = useState<Recipe | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [showGeneratePage, setShowGeneratePage] = useState(false);
 
   const displayedRecipes = activeTab === 'suggested' 
     ? MOCK_RECIPES.filter(r => r.isSuggested) 
     : MOCK_RECIPES;
 
   const handleGenerateAI = async () => {
-    if (inventory.length === 0) {
-      Alert.alert("Inventaire vide", "Ajoutez des ingrédients pour générer une recette.");
-      return;
-    }
-
-    setLoadingAI(true);
-    try {
-      // Check for API Key presence (simulate check)
-      if (!process.env.API_KEY) {
-        throw new Error("API Key missing");
-      }
-      const result = await generateRecipeSuggestion(inventory);
-      const newRecipe: Recipe = {
-        id: 'ai-' + Date.now(),
-        name: result.name,
-        description: result.description,
-        prepTime: result.prepTime,
-        difficulty: result.difficulty as any,
-        ingredients: result.ingredientsUsed || [],
-        steps: result.steps || [],
-        image: 'https://picsum.photos/600/400?grayscale', // AI placeholder
-        availableIngredients: 0,
-        totalIngredients: 0,
-        isSuggested: true
-      };
-      setGeneratedRecipe(newRecipe);
-      setModalVisible(true);
-    } catch (e) {
-      console.log("AI Error or Key Missing", e);
-      Alert.alert("Info", "La génération IA nécessite une clé API configurée. Mode démo actif.");
-      
-      // FALLBACK DEMO MOCK
-      setTimeout(() => {
-        const demoRecipe: Recipe = {
-           id: 'demo-1',
-           name: "Poêlée 'Vide-Frigo'",
-           description: "Une recette générée pour utiliser vos restes de " + inventory[0]?.name,
-           prepTime: 20,
-           difficulty: 'Facile',
-           ingredients: [inventory[0]?.name || 'Légumes', 'Huile', 'Sel', 'Poivre'],
-           steps: ['Couper tout', 'Cuire 20 min', 'Servir chaud'],
-           image: 'https://picsum.photos/seed/demo/600/400',
-           isSuggested: true
-        };
-        setGeneratedRecipe(demoRecipe);
-        setModalVisible(true);
-      }, 1500);
-    } finally {
-      setLoadingAI(false);
-    }
+    // Afficher une page vide pour le moment
+    setGeneratedRecipe(null);
+    setShowGeneratePage(true);
   };
 
-  return (
+  const mainContent = (
     <View style={[styles.container, isDarkMode && styles.darkContainer]}>
       <Header appName="EcoManger" />
       <ScrollView contentContainerStyle={[styles.content, isDarkMode && styles.darkContent]}>
@@ -173,61 +127,20 @@ const Recipes: React.FC<RecipesProps> = ({ inventory }) => {
         </View>
       </ScrollView>
 
-      {/* Generated Recipe Modal */}
-      <Modal
-        animationType="slide"
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-        presentationStyle="pageSheet"
-      >
-        <View style={styles.modalContainer}>
-          <ScrollView>
-             <Image source={{ uri: generatedRecipe?.image }} style={styles.modalImage} />
-             <TouchableOpacity style={styles.closeBtn} onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#fff" />
-             </TouchableOpacity>
-
-             <View style={styles.modalContent}>
-                <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>{generatedRecipe?.name}</Text>
-                  <View style={styles.modalMeta}>
-                    <Ionicons name="time-outline" size={16} color="#6b7280" />
-                    <Text style={styles.modalMetaText}>{generatedRecipe?.prepTime} min</Text>
-                    <Text style={styles.dot}>•</Text>
-                    <Ionicons name="restaurant" size={16} color="#6b7280" />
-                    <Text style={styles.modalMetaText}>{generatedRecipe?.difficulty}</Text>
-                  </View>
-                </View>
-
-                <Text style={styles.modalDesc}>{generatedRecipe?.description}</Text>
-
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Ingrédients</Text>
-                  {generatedRecipe?.ingredients.map((ing, i) => (
-                    <View key={i} style={styles.ingRow}>
-                       <View style={styles.bullet} />
-                       <Text style={styles.ingText}>{ing}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Étapes</Text>
-                  {generatedRecipe?.steps?.map((step, i) => (
-                    <View key={i} style={styles.stepRow}>
-                       <View style={styles.stepNum}>
-                         <Text style={styles.stepNumText}>{i + 1}</Text>
-                       </View>
-                       <Text style={styles.stepText}>{step}</Text>
-                    </View>
-                  ))}
-                </View>
-             </View>
-          </ScrollView>
-        </View>
-      </Modal>
     </View>
   );
+
+  // Page de génération de recette
+  if (showGeneratePage) {
+    return (
+      <GenerateRecipe 
+        inventory={inventory} 
+        onBack={() => setShowGeneratePage(false)} 
+      />
+    );
+  }
+
+  return mainContent;
 };
 
 const styles = StyleSheet.create({
@@ -508,6 +421,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  darkModalContainer: {
+    backgroundColor: '#111827',
+  },
   modalImage: {
     width: '100%',
     height: 300,
@@ -517,9 +433,35 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.1)',
     padding: 8,
     borderRadius: 20,
+    zIndex: 10,
+  },
+  emptyModalContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    marginTop: 24,
+    textAlign: 'center',
+  },
+  darkEmptyModalTitle: {
+    color: '#fff',
+  },
+  emptyModalSubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  darkEmptyModalSubtitle: {
+    color: '#9ca3af',
   },
   modalContent: {
     padding: 24,
